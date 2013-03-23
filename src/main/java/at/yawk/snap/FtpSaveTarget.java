@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -54,7 +52,7 @@ public class FtpSaveTarget implements SaveTarget {
         progressUpdate.setValue(0.2F);
         ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
         final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        ImageIO.write(image, filetype, stream);
+        SnapImageIO.write(image, filetype, stream);
         stream.flush();
         final byte[] imageData = stream.toByteArray();
         progressUpdate.setValue(0.3F);
