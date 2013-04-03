@@ -8,9 +8,6 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
-import com.googlecode.pngtastic.core.PngImage;
-import com.googlecode.pngtastic.core.PngOptimizer;
-
 public class SnapImageIO {
     private SnapImageIO() {
     }
