@@ -43,20 +43,12 @@ public class YawkatSnap implements Runnable {
         }
         trayIcon = new SnapTrayIcon(this);
         trayIcon.run();
-        // Reset key states
-        doPollKeyboard();
-        new KeyboardControl(this, 100) {
+        KeyboardHandler.registerHotkey(KeyEvent.VK_1, KeyboardHandler.MASK_CTRL, new Runnable() {
             @Override
-            protected boolean pollKeyboard() {
-                return doPollKeyboard();
+            public void run() {
+                doSnap();
             }
-        }.start();
-    }
-    
-    private boolean doPollKeyboard() {
-        final boolean downNum = KeyboardHandler.isKeyDown(KeyEvent.VK_1);
-        final boolean downCtrl = KeyboardHandler.isKeyDown(KeyEvent.VK_CONTROL);
-        return downNum && downCtrl;
+        });
     }
     
     private void displayThrowableMessage(Throwable throwable) {

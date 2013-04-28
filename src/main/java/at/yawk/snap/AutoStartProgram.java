@@ -3,6 +3,7 @@ package at.yawk.snap;
 import java.io.File;
 import java.net.URISyntaxException;
 
+@SuppressWarnings("unused")
 public class AutoStartProgram {
     private final String name;
     
@@ -15,7 +16,10 @@ public class AutoStartProgram {
     }
     
     private boolean isAutoStart(String mainClassName) {
+        /*
         return YawkatSnapNatives.checkAutoStart(getJavaPath(), getProgramPath(), mainClassName, name) == 0;
+        */
+        return false;
     }
     
     public boolean setAutoStart(Class<?> mainClass, boolean autoStart) {
@@ -23,11 +27,14 @@ public class AutoStartProgram {
     }
     
     private boolean setAutoStart(String mainClassName, boolean autoStart) {
+        /*
         if (autoStart) {
             return YawkatSnapNatives.setAutoStart(getJavaPath(), getProgramPath(), mainClassName, name) == 0;
         } else {
             return YawkatSnapNatives.unsetAutoStart(getJavaPath(), getProgramPath(), mainClassName, name) == 0;
         }
+        */
+        return false;
     }
     
     private String getJavaPath() {
