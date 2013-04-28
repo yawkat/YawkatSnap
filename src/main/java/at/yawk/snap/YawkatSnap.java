@@ -135,9 +135,14 @@ public class YawkatSnap implements Runnable {
                 if (as.length == 0 || (as.length == 1 && as[0].isEmpty())) {
                     return;
                 }
+                boolean monospaced = false;
                 int spaces = Integer.MAX_VALUE;
                 for (int i = 0; i < as.length; i++) {
                     as[i] = as[i].replace("\t", "    ");
+                    // monospace if any kind of indentation is detected
+                    if (!monospaced && as[i].contains("  ")) {
+                        monospaced = true;
+                    }
                     for (int j = 0; j < as[i].length() && j < spaces; j++) {
                         if (as[i].charAt(j) != ' ') {
                             spaces = j;
@@ -151,9 +156,9 @@ public class YawkatSnap implements Runnable {
                     }
                 }
                 final FontRenderContext renderContext = new FontRenderContext(new AffineTransform(), true, false);
-                final Font font = new Font("Tahoma", Font.PLAIN, 16);
+                final Font font = new Font(monospaced ? "Courir Sans New" : "Tahoma", Font.PLAIN, monospaced ? 10 : 16);
                 final Rectangle r = new Rectangle();
-                r.height = as.length * 17;
+                r.height = as.length * (font.getSize() + 1);
                 for (String s : as) {
                     final Rectangle2D bounds = font.getStringBounds(s, renderContext);
                     r.width = Math.max((int) bounds.getWidth(), r.width);
@@ -165,7 +170,7 @@ public class YawkatSnap implements Runnable {
                 g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, renderContext.getAntiAliasingHint());
                 int a = (int) g.getFontMetrics().getLineMetrics(as[0], g).getAscent() + 1;
                 for (int i = 0; i < as.length; i++) {
-                    g.drawString(as[i], 1, a + i * 17);
+                    g.drawString(as[i], 1, a + i * (font.getSize() + 1));
                 }
                 g.dispose();
                 handleSnap(bi);
