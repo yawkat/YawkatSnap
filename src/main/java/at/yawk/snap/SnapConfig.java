@@ -1,6 +1,6 @@
 package at.yawk.snap;
 
-import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -88,7 +88,7 @@ public class SnapConfig {
         if (saveTarget == null) {
             saveTarget = new SaveTarget() {
                 @Override
-                public String saveTo(BufferedImage image, IdGenerator idGenerator, UpdateMonitor monitor) throws Exception {
+                public String saveTo(RenderedImage image, IdGenerator idGenerator, UpdateMonitor monitor) throws Exception {
                     throw new IllegalStateException("No save target has been specified yet!");
                 }
                 
@@ -122,7 +122,7 @@ public class SnapConfig {
     public void setAutostart(boolean autostart) {
         new AutoStartProgram("YawkatSnap").setAutoStart(YawkatSnap.class, autostart);
     }
-
+    
     public Properties getProperties() {
         return properties;
     }

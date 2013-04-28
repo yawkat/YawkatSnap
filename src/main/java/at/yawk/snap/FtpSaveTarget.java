@@ -1,6 +1,6 @@
 package at.yawk.snap;
 
-import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ public class FtpSaveTarget implements SaveTarget {
     }
     
     @Override
-    public String saveTo(BufferedImage image, IdGenerator idGenerator, final UpdateMonitor progressUpdate) throws Exception {
+    public String saveTo(RenderedImage image, IdGenerator idGenerator, final UpdateMonitor progressUpdate) throws Exception {
         final String username = properties.getProperty("save.ftp.username");
         final String password = properties.getProperty("save.ftp.password");
         final String hostname = properties.getProperty("save.ftp.host");

@@ -1,6 +1,6 @@
 package at.yawk.snap;
 
-import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.util.Properties;
 
 public interface SaveTarget {
@@ -14,5 +14,5 @@ public interface SaveTarget {
      * @return The decided image ID
      * @throws Exception 
      */
-    public String saveTo(BufferedImage image, IdGenerator idGenerator, UpdateMonitor monitor) throws Exception;
+    public String saveTo(RenderedImage image, IdGenerator idGenerator, UpdateMonitor monitor) throws Exception;
 }

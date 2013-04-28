@@ -1,17 +1,32 @@
 package at.yawk.snap;
 
 import java.awt.Dialog.ModalExclusionType;
+import java.awt.Graphics2D;
 import java.awt.TrayIcon.MessageType;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GraphicsDevice;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.KeyEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
@@ -49,6 +64,12 @@ public class YawkatSnap implements Runnable {
                 doSnap();
             }
         });
+        KeyboardHandler.registerHotkey(KeyEvent.VK_2, KeyboardHandler.MASK_CTRL, new Runnable() {
+            @Override
+            public void run() {
+                snapFromClipboard();
+            }
+        });
     }
     
     private void displayThrowableMessage(Throwable throwable) {
@@ -83,21 +104,75 @@ public class YawkatSnap implements Runnable {
             config.getCropDisplay().setCallback(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        final String id = config.getSaveTarget().saveTo(config.getCropDisplay().getCroppedImage(), config.getIdGenerator(), trayIcon);
-                        final String clip = config.getTargetUrl().replace("%id", id);
-                        ClipboardSaver.saveToClipboard(clip);
-                        trayIcon.displayMessage("YawkatSnap", "Uploaded " + clip, MessageType.INFO);
-                        trayIcon.setValue(-1);
-                    } catch (Exception e) {
-                        displayThrowableMessage(e);
-                    }
+                    handleSnap(config.getCropDisplay().getCroppedImage());
                 }
             });
             config.getCropDisplay().display();
         } catch (Exception e) {
             displayThrowableMessage(e);
             System.exit(0);
+        }
+    }
+    
+    protected void snapFromClipboard() {
+        final Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+        try {
+            if (t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
+                handleSnap(toRendered((Image) t.getTransferData(DataFlavor.imageFlavor)));
+            } else if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                @SuppressWarnings("unchecked")
+                final List<File> l = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+                for (File file : l) {
+                    try {
+                        handleSnap(ImageIO.read(file));
+                        break;
+                    } catch (IOException e) {
+                    }
+                }
+            } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                final String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+                if (s.isEmpty()) {
+                    return;
+                }
+                final FontRenderContext renderContext = new FontRenderContext(new AffineTransform(), true, false);
+                final Font font = new Font("Tahoma", Font.PLAIN, 16);
+                final Rectangle2D bounds = font.getStringBounds(s, renderContext);
+                final BufferedImage bi = new BufferedImage((int) bounds.getWidth() + 2, (int) bounds.getHeight() + 2, BufferedImage.TYPE_4BYTE_ABGR);
+                final Graphics2D g = bi.createGraphics();
+                g.setFont(font);
+                g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, renderContext.getAntiAliasingHint());
+                g.drawString(s, 1, 1 + g.getFontMetrics().getLineMetrics(s, g).getAscent());
+                g.dispose();
+                handleSnap(bi);
+            }
+        } catch (UnsupportedFlavorException e) {
+            // flavors are checked, this should not happen.
+            throw new Error(e);
+        } catch (IOException e) {
+            throw new Error(e);
+        }
+    }
+    
+    private static RenderedImage toRendered(Image image) {
+        if (image instanceof RenderedImage) {
+            return (RenderedImage) image;
+        }
+        final BufferedImage copy = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_4BYTE_ABGR);
+        final Graphics2D g = copy.createGraphics();
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+        return copy;
+    }
+    
+    protected void handleSnap(RenderedImage image) {
+        try {
+            final String id = config.getSaveTarget().saveTo(image, config.getIdGenerator(), trayIcon);
+            final String clip = config.getTargetUrl().replace("%id", id);
+            ClipboardSaver.saveToClipboard(clip);
+            trayIcon.displayMessage("YawkatSnap", "Uploaded " + clip, MessageType.INFO);
+            trayIcon.setValue(-1);
+        } catch (Exception e) {
+            displayThrowableMessage(e);
         }
     }
 }
