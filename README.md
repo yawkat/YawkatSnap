@@ -34,12 +34,12 @@ How to build
 
     Fill in these entries:
     * _save.ftp.host_ Hostname of your FTP server
-    * _save.ftp.port_ Port of your FTP server, usually 21
+    * _save.ftp.port_ Port of your FTP server, usually `21`
     * _save.ftp.username_ Username for your FTP server
     * _save.ftp.password_ password for your FTP server
-    * _save.ftp.directory_ upload directory, should start and end with a forward slash, for example /images/
-    * _save.ftp.filetype_ the image file type, such as PNG (recommended), GIF or JPG
-    * _save.ftp.filename_ the image file name. %id will be replaced with the generated id. for PNG this could be %id.png
-    * _idgen.regex.regex_ the regular expression for the image ID, for example [0-9a-zA-Z]{4}
-    * _clipboard_ the clipboard link to the image. Once again, %id will be replaced by the image id. This might be http://example.com/images/%id.png or http://example.com/image.php?id=%id
+    * _save.ftp.directory_ upload directory, should start and end with a forward slash, for example `/images/`
+    * _save.ftp.filetype_ the image file type, such as `PNG` (recommended), `GIF` or `JPG`
+    * _save.ftp.filename_ the image file name. `%id` will be replaced with the generated id. for PNG this could be `%id.png`
+    * _idgen.regex.regex_ the regular expression for the image ID, for example `[0-9a-zA-Z]{4}`
+    * _clipboard_ the clipboard link to the image. Once again, `%id` will be replaced by the image id. This might be `http://example.com/images/%id.png` or `http://example.com/image.php?id=%id`
 9. Launch the program by double-clicking the jar file
