@@ -3,6 +3,7 @@ package at.yawk.snap;
 import java.awt.Dialog.ModalExclusionType;
 import java.awt.Graphics2D;
 import java.awt.TrayIcon.MessageType;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
@@ -130,18 +131,42 @@ public class YawkatSnap implements Runnable {
                     }
                 }
             } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                final String s = (String) t.getTransferData(DataFlavor.stringFlavor);
-                if (s.isEmpty()) {
+                final String[] as = ((String) t.getTransferData(DataFlavor.stringFlavor)).split("\n");
+                if (as.length == 0 || (as.length == 1 && as[0].isEmpty())) {
                     return;
+                }
+                int spaces = Integer.MAX_VALUE;
+                for (int i = 0; i < as.length; i++) {
+                    as[i] = as[i].replace("\t", "    ");
+                    for (int j = 0; j < as[i].length() && j < spaces; j++) {
+                        if (as[i].charAt(j) != ' ') {
+                            spaces = j;
+                            break;
+                        }
+                    }
+                }
+                if (spaces != Integer.MAX_VALUE && spaces != 0) {
+                    for (int i = 0; i < as.length; i++) {
+                        as[i] = as[i].length() > spaces ? as[i].substring(spaces) : "";
+                    }
                 }
                 final FontRenderContext renderContext = new FontRenderContext(new AffineTransform(), true, false);
                 final Font font = new Font("Tahoma", Font.PLAIN, 16);
-                final Rectangle2D bounds = font.getStringBounds(s, renderContext);
-                final BufferedImage bi = new BufferedImage((int) bounds.getWidth() + 2, (int) bounds.getHeight() + 2, BufferedImage.TYPE_4BYTE_ABGR);
+                final Rectangle r = new Rectangle();
+                r.height = as.length * 17;
+                for (String s : as) {
+                    final Rectangle2D bounds = font.getStringBounds(s, renderContext);
+                    r.width = Math.max((int) bounds.getWidth(), r.width);
+                }
+                final BufferedImage bi = new BufferedImage((int) r.getWidth() + 2, (int) r.getHeight() + 2, BufferedImage.TYPE_4BYTE_ABGR);
                 final Graphics2D g = bi.createGraphics();
                 g.setFont(font);
+                g.setColor(Color.BLACK);
                 g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, renderContext.getAntiAliasingHint());
-                g.drawString(s, 1, 1 + g.getFontMetrics().getLineMetrics(s, g).getAscent());
+                int a = (int) g.getFontMetrics().getLineMetrics(as[0], g).getAscent() + 1;
+                for (int i = 0; i < as.length; i++) {
+                    g.drawString(as[i], 1, a + i * 17);
+                }
                 g.dispose();
                 handleSnap(bi);
             }
