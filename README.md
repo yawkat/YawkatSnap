@@ -8,6 +8,11 @@ What this does
 
 This program allows you to screenshot anything and upload it to your FTP server directly. You can screenshot a part of your desktop using `Ctrl+1` or directly upload an image or file from your clipboard using `Ctrl+2`. The filename for the image can be configured in Regex form, for example `[0-9a-zA-z]{4}` to create a random, 4-character string. Then, this program copies a link to the image to your clipboard.
 
+Download
+--------
+
+[Download from my jenkins](http://ci.yawk.at/job/YawkatSnap/)
+
 How to build
 ------------
 
