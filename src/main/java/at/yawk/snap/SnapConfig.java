@@ -1,9 +1,9 @@
 package at.yawk.snap;
 
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOError;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -14,14 +14,13 @@ public class SnapConfig {
     private String targetUrl;
     
     private final File configFile;
-    private final Properties properties = new Properties();
+    private final Properties properties = new Properties(getDefaults());
     
     public SnapConfig(File configFile) throws IOException {
         this.configFile = configFile;
         if (configFile.exists()) {
             load();
         }
-        fillDefaults();
         setCropDisplay(new FullscreenFrameCropDisplay());
     }
     
@@ -68,15 +67,21 @@ public class SnapConfig {
     }
     
     private void save() {
-        final String saveType = SaveTargets.getSaveTargetType(saveTarget.getClass());
-        if (saveType != null) {
-            properties.setProperty("save.type", saveType);
+        if(saveTarget != null) {
+            final String saveType = SaveTargets.getSaveTargetType(saveTarget.getClass());
+            if (saveType != null) {
+                properties.setProperty("save.type", saveType);
+            }
         }
-        final String idType = IdGenerators.getIdGeneratorType(idGenerator.getClass());
-        if (idType != null) {
-            properties.setProperty("idgen.type", idType);
+        if(idGenerator != null) {
+            final String idType = IdGenerators.getIdGeneratorType(idGenerator.getClass());
+            if (idType != null) {
+                properties.setProperty("idgen.type", idType);
+            }
         }
-        properties.setProperty("clipboard", targetUrl);
+        if(targetUrl != null) {
+            properties.setProperty("clipboard", targetUrl);
+        }
         try {
             properties.store(new FileWriter(configFile), "Configuration file for YawkatSnap");
         } catch (IOException e) {
@@ -84,35 +89,14 @@ public class SnapConfig {
         }
     }
     
-    private void fillDefaults() {
-        if (saveTarget == null) {
-            saveTarget = new SaveTarget() {
-                @Override
-                public String saveTo(RenderedImage image, IdGenerator idGenerator, UpdateMonitor monitor) throws Exception {
-                    throw new IllegalStateException("No save target has been specified yet!");
-                }
-                
-                @Override
-                public void setProperties(Properties properties) {
-                }
-            };
+    private Properties getDefaults() {
+        final Properties defaults = new Properties();
+        try {
+            defaults.load(YawkatSnap.class.getResourceAsStream("/example-config.properties"));
+        } catch (IOException e) {
+            throw new IOError(e);
         }
-        if (idGenerator == null) {
-            idGenerator = new IdGenerator() {
-                @Override
-                public String generateId(long timeMilliSeconds, long timeSeconds) {
-                    throw new IllegalStateException("No id generator has been specified yet!");
-                }
-                
-                @Override
-                public void serializeSettings(Properties properties) {
-                    throw new UnsupportedOperationException();
-                }
-            };
-        }
-        if (targetUrl == null) {
-            targetUrl = "%id";
-        }
+        return defaults;
     }
     
     public boolean isAutostart() {

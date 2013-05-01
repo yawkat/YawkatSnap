@@ -1,6 +1,7 @@
 package at.yawk.snap;
 
 import java.awt.AWTException;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
@@ -15,7 +16,6 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
-import at.yawk.snap.config.ConfigurationEditPane;
 
 public class SnapTrayIcon implements Runnable, UpdateMonitor {
     private final YawkatSnap snapper;
@@ -67,8 +67,18 @@ public class SnapTrayIcon implements Runnable, UpdateMonitor {
                         @Override
                         public void run() {
                             final JFrame jframe = new JFrame("Config");
+                            jframe.setLayout(new BorderLayout());
+                            jframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                             jframe.setResizable(false);
-                            jframe.add(new ConfigurationEditPane(snapper.config));
+                            final Runnable callback = new Runnable() {
+                                @Override
+                                public void run() {
+                                    jframe.setVisible(false);
+                                    jframe.dispose();
+                                }
+                            };
+                            jframe.add(new SettingsPanel(callback, callback, snapper.config));
+                            jframe.validate();
                             jframe.pack();
                             jframe.setLocationRelativeTo(null);
                             jframe.setVisible(true);
