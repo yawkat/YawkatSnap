@@ -48,6 +48,8 @@ Should my maven repository be offline, follow these steps to build it independen
 Configuration
 -------------
 
+If you want to configure this manually, follow the steps below. You can also change your preferences by clicking the Config entry in the tray icon menu.
+
 Create a file called `config.properties` in the directory with the jar file and fill it with this code:
     
     save.type=ftp
