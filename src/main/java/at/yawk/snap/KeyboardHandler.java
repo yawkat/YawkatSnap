@@ -1,6 +1,7 @@
 package at.yawk.snap;
 
 import java.awt.Event;
+
 import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
 
@@ -10,6 +11,15 @@ public class KeyboardHandler {
     public static final int MASK_SHIFT = 0x4;
     
     private static int uniqueIdentifier = 0;
+    
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JIntellitype.getInstance().cleanUp();
+            }
+        }));
+    }
     
     /**
      * Register a new hotkey.
