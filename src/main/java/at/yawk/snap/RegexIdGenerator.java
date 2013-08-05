@@ -20,8 +20,8 @@ public class RegexIdGenerator implements IdGenerator {
     @Override
     public String generateId(long timeMilliSeconds, long timeSeconds) {
         String usedRegex = regex;
-        usedRegex.replace("$ms", Long.toString(timeMilliSeconds));
-        usedRegex.replace("$s", Long.toString(timeSeconds));
+        usedRegex = usedRegex.replace("$ms", Long.toString(timeMilliSeconds));
+        usedRegex = usedRegex.replace("$s", Long.toString(timeSeconds));
         return new Xeger(usedRegex, rng).generate();
     }
     
