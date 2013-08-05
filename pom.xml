@@ -9,13 +9,6 @@
 
 	<name>YawkatSnap</name>
 	<url>http://yawk.at</url>
-	
-	<repositories>
-    	<repository>
-			<id>yawkat</id>
-			<url>http://ci.yawk.at:8081/artifactory/repository/</url>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -41,7 +34,7 @@
 		<dependency>
 			<groupId>com.melloware</groupId>
 			<artifactId>jintellitype</artifactId>
-			<version>1.3.9-SNAPSHOT</version>
+			<version>1.3.7</version>
 		</dependency>
 	</dependencies>
 
