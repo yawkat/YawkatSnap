@@ -91,12 +91,6 @@ public class SnapTrayIcon implements Runnable, UpdateMonitor {
             popup.add(exit);
             trayIcon.setPopupMenu(popup);
             SystemTray.getSystemTray().add(trayIcon);
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    SystemTray.getSystemTray().remove(trayIcon);
-                }
-            }));
         } catch (HeadlessException e) {
             e.printStackTrace();
         } catch (AWTException e) {
