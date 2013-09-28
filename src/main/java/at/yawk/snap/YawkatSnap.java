@@ -59,18 +59,22 @@ public class YawkatSnap implements Runnable {
         }
         trayIcon = new SnapTrayIcon(this);
         trayIcon.run();
-        KeyboardHandler.registerHotkey(KeyEvent.VK_1, KeyboardHandler.MASK_CTRL, new Runnable() {
-            @Override
-            public void run() {
-                doSnap();
-            }
-        });
-        KeyboardHandler.registerHotkey(KeyEvent.VK_2, KeyboardHandler.MASK_CTRL, new Runnable() {
-            @Override
-            public void run() {
-                snapFromClipboard();
-            }
-        });
+        try {
+            KeyboardHandler.getInstance().registerHotkey(KeyEvent.VK_1, KeyboardHandler.MASK_CTRL, new Runnable() {
+                @Override
+                public void run() {
+                    doSnap();
+                }
+            });
+            KeyboardHandler.getInstance().registerHotkey(KeyEvent.VK_2, KeyboardHandler.MASK_CTRL, new Runnable() {
+                @Override
+                public void run() {
+                    snapFromClipboard();
+                }
+            });
+        } catch (Exception e) {
+            displayThrowableMessage(e);
+        }
     }
     
     private void displayThrowableMessage(Throwable throwable) {
@@ -121,14 +125,12 @@ public class YawkatSnap implements Runnable {
             if (t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
                 handleSnap(toRendered((Image) t.getTransferData(DataFlavor.imageFlavor)));
             } else if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-                @SuppressWarnings("unchecked")
-                final List<File> l = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+                @SuppressWarnings("unchecked") final List<File> l = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
                 for (File file : l) {
                     try {
                         handleSnap(ImageIO.read(file));
                         break;
-                    } catch (IOException e) {
-                    }
+                    } catch (IOException e) {}
                 }
             } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
                 final String[] as = ((String) t.getTransferData(DataFlavor.stringFlavor)).split("\n");

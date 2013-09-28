@@ -1,7 +1,7 @@
 YawkatSnap
 ==========
 
-Java Windows FTP screenshots, like ScreenSnapr
+Java Windows/Linux FTP screenshots, like ScreenSnapr
 
 What this does
 --------------
